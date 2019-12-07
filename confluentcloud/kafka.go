@@ -99,7 +99,10 @@ func (c *Client) DeleteCluster(id, account_id string) error {
 
 	u := c.BaseURL.ResolveReference(rel)
 
-	data, _ := c.GetCluster(id, account_id)
+	data, err := c.GetCluster(id, account_id)
+	if err != nil {
+		return err
+	}
 
 	response, err := c.NewRequest().
 		SetBody(&ClusterResponse{Cluster: *data}).
