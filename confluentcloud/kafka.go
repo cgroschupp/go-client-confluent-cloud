@@ -66,20 +66,13 @@ func (c *Client) ListClusters(account_id string) ([]Cluster, error) {
 	return response.Result().(*ClustersResponse).Clusters, nil
 }
 
-func (c *Client) CreateCluster(name, region, cloud, account_id string) (*Cluster, error) {
+func (c *Client) CreateCluster(request ClusterCreateConfig) (*Cluster, error) {
 	rel, err := url.Parse("clusters")
 	if err != nil {
 		return nil, err
 	}
 
 	u := c.BaseURL.ResolveReference(rel)
-	request := ClusterCreateConfig{
-		Name:            name,
-		Region:          region,
-		ServiceProvider: cloud,
-		Storage:         5000,
-		AccountID:       account_id,
-	}
 
 	response, err := c.NewRequest().
 		SetBody(&ClusterCreateRequest{Config: request}).
