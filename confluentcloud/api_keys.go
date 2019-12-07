@@ -7,7 +7,7 @@ import (
 
 type LogicalCluster struct {
 	ID   string  `json:"id"`
-	Type *string `json:"type"`
+	Type *string `json:"type,omitempty"`
 }
 
 type APIKey struct {
@@ -16,7 +16,7 @@ type APIKey struct {
 	HashedSecret    string           `json:"hashed_secret"`
 	HashedFunction  string           `json:"hashed_function"`
 	SASLMechanism   string           `json:"sasl_mechanism"`
-	UserID          string           `json:"user_id"`
+	UserID          int              `json:"user_id"`
 	Deactived       bool             `json:"deactived"`
 	ID              int              `json:"id"`
 	Description     string           `json:"description"`
@@ -25,10 +25,16 @@ type APIKey struct {
 	ServiceAccount  bool             `json:"service_account"`
 }
 
+type APIKeysResponse struct {
+	APIKeys []APIKey `json:"api_keys"`
+}
+
 type APIKeyResponse struct {
 	APIKey APIKey `json:"api_key"`
 }
-
+type ApiKeyCreateRequestW struct {
+	APIKey *ApiKeyCreateRequest `json:"api_key"`
+}
 type ApiKeyCreateRequest struct {
 	AccountID       string           `json:"accountId"`
 	LogicalClusters []LogicalCluster `json:"logical_clusters"`
@@ -43,8 +49,8 @@ func (c *Client) CreateAPIKey(request *ApiKeyCreateRequest) (*APIKey, error) {
 	u := c.BaseURL.ResolveReference(rel)
 
 	response, err := c.NewRequest().
-		SetBody(request).
-		SetResult(&ClusterResponse{}).
+		SetBody(&ApiKeyCreateRequestW{APIKey: request}).
+		SetResult(&APIKeyResponse{}).
 		SetError(&ErrorResponse{}).
 		Post(u.String())
 
@@ -57,4 +63,28 @@ func (c *Client) CreateAPIKey(request *ApiKeyCreateRequest) (*APIKey, error) {
 	}
 
 	return &response.Result().(*APIKeyResponse).APIKey, nil
+}
+
+func (c *Client) ListAPIKeys(clusterID, accountID string) ([]APIKey, error) {
+	rel, err := url.Parse("api_keys")
+	if err != nil {
+		return []APIKey{}, err
+	}
+
+	u := c.BaseURL.ResolveReference(rel)
+	response, err := c.NewRequest().
+		SetQueryParam("account_id", accountID).
+		SetQueryParam("cluster_id", clusterID).
+		SetResult(&APIKeysResponse{}).
+		SetError(&ErrorResponse{}).
+		Get(u.String())
+
+	if err != nil {
+		return []APIKey{}, err
+	}
+
+	if response.IsError() {
+		return []APIKey{}, fmt.Errorf("clusters: %s", response.Error().(*ErrorResponse).Error.Message)
+	}
+	return response.Result().(*APIKeysResponse).APIKeys, nil
 }

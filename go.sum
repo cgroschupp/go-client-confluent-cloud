@@ -1,3 +1,4 @@
+github.com/Mongey/go-client-confluent-cloud v0.0.0-20191207025445-a1f50f8cd6a7 h1:0PuY1MTR5d+YuUecAziqN3CFW5SDFyTfUiDmpTLGVL4=
 github.com/go-resty/resty/v2 v2.1.0 h1:Z6IefCpUMfnvItVJaJXWv/pMiiD11So35QgwEELsldE=
 github.com/go-resty/resty/v2 v2.1.0/go.mod h1:dZGr0i9PLlaaTD4H/hoZIDjQ+r6xq8mgbRzHZf7f2J8=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=

@@ -45,7 +45,7 @@ type ClusterResponse struct {
 	Cluster Cluster `json:"cluster"`
 }
 
-func (c *Client) ListClusters(account_id string) ([]Cluster, error) {
+func (c *Client) ListClusters(accountID string) ([]Cluster, error) {
 	rel, err := url.Parse("clusters")
 	if err != nil {
 		return []Cluster{}, err
@@ -53,7 +53,7 @@ func (c *Client) ListClusters(account_id string) ([]Cluster, error) {
 
 	u := c.BaseURL.ResolveReference(rel)
 	response, err := c.NewRequest().
-		SetQueryParam("account_id", account_id).
+		SetQueryParam("account_id", accountID).
 		SetResult(&ClustersResponse{}).
 		SetError(&ErrorResponse{}).
 		Get(u.String())
