@@ -16,6 +16,7 @@ type ClusterCreateConfig struct {
 	Region          string `json:"region"`
 	ServiceProvider string `json:"serviceProvider"`
 }
+
 type ClusterCreateRequest struct {
 	Config ClusterCreateConfig `json:"config"`
 }
@@ -39,6 +40,7 @@ type Cluster struct {
 	InternalProxy   bool   `json:"internal_proxy"`
 	Dedicated       bool   `json:"dedicated"`
 }
+
 type ClusterResponse struct {
 	Cluster Cluster `json:"cluster"`
 }
