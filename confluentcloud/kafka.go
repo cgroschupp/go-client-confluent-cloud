@@ -118,7 +118,7 @@ func (c *Client) DeleteCluster(id, account_id string) error {
 	}
 
 	if response.IsError() {
-		return fmt.Errorf("delete clusters: %s", response.Error().(*ErrorResponse).Error.Message)
+		return fmt.Errorf("delete cluster: %s", response.Error().(*ErrorResponse).Error.Message)
 	}
 
 	return nil
@@ -149,4 +149,32 @@ func (c *Client) GetCluster(id, account_id string) (*Cluster, error) {
 	}
 
 	return &response.Result().(*ClusterResponse).Cluster, nil
+}
+
+func (c *Client) UpdateCluster(id, account_id, name string) error {
+	rel, err := url.Parse(fmt.Sprintf("clusters/%s", id))
+	if err != nil {
+		return err
+	}
+
+	u := c.BaseURL.ResolveReference(rel)
+
+	data, _ := c.GetCluster(id, account_id)
+
+	data.Name = name
+
+	response, err := c.NewRequest().
+		SetBody(&ClusterResponse{Cluster: *data}).
+		SetError(&ErrorResponse{}).
+		Put(u.String())
+
+	if err != nil {
+		return err
+	}
+
+	if response.IsError() {
+		return fmt.Errorf("update cluster: %s", response.Error().(*ErrorResponse).Error.Message)
+	}
+
+	return nil
 }
