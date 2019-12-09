@@ -159,7 +159,11 @@ func (c *Client) UpdateCluster(id, account_id, name string) error {
 
 	u := c.BaseURL.ResolveReference(rel)
 
-	data, _ := c.GetCluster(id, account_id)
+	data, err := c.GetCluster(id, account_id)
+
+	if err != nil {
+		return err
+	}
 
 	data.Name = name
 
