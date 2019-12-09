@@ -1,4 +1,4 @@
-module github.com/cgroschupp/go-client-confluent-cloud
+module github.com/Mongey/go-client-confluent-cloud
 
 go 1.12
 

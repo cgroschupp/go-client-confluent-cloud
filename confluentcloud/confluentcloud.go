@@ -3,7 +3,7 @@ package confluentcloud
 import (
 	"net/url"
 
-	"github.com/go-resty/resty/v2"
+	resty "github.com/go-resty/resty/v2"
 )
 
 const (
@@ -25,6 +25,7 @@ type ErrorMessage struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 }
+
 type ErrorResponse struct {
 	Error ErrorMessage `json:"error"`
 }
