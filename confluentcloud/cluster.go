@@ -15,6 +15,7 @@ type ClusterCreateConfig struct {
 	Storage         int    `json:"storage"`
 	Region          string `json:"region"`
 	ServiceProvider string `json:"serviceProvider"`
+	Durability      string `json:"durability"`
 }
 
 type ClusterCreateRequest struct {
