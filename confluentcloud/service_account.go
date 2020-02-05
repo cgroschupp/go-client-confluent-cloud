@@ -57,7 +57,7 @@ func (c *Client) CreateServiceAccount(request *ServiceAccountCreateRequest) (*Se
 	return &response.Result().(*ServiceAccountResponse).ServiceAccount, nil
 }
 
-func (c *Client) ListServiceAccounts(clusterID, accountID string) ([]ServiceAccount, error) {
+func (c *Client) ListServiceAccounts() ([]ServiceAccount, error) {
 	rel, err := url.Parse("service_accounts")
 	if err != nil {
 		return []ServiceAccount{}, err
@@ -65,8 +65,6 @@ func (c *Client) ListServiceAccounts(clusterID, accountID string) ([]ServiceAcco
 
 	u := c.BaseURL.ResolveReference(rel)
 	response, err := c.NewRequest().
-		SetQueryParam("account_id", accountID).
-		SetQueryParam("cluster_id", clusterID).
 		SetResult(&ServiceAccountsResponse{}).
 		SetError(&ErrorResponse{}).
 		Get(u.String())
