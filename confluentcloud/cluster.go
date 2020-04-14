@@ -2,6 +2,7 @@ package confluentcloud
 
 import (
 	"fmt"
+	"log"
 	"net/url"
 	"time"
 )
@@ -138,13 +139,15 @@ func (c *Client) DeleteCluster(id, account_id string) error {
 
 	u := c.BaseURL.ResolveReference(rel)
 
-	data, err := c.GetCluster(id, account_id)
-	if err != nil {
-		return err
-	}
-
 	response, err := c.NewRequest().
-		SetBody(&ClusterResponse{Cluster: *data}).
+		SetBody(
+			map[string]interface{}{
+				"cluster": map[string]interface{}{
+					"id": id,
+					"accountId": account_id,
+				},
+			},
+		).
 		SetError(&ErrorResponse{}).
 		Delete(u.String())
 
@@ -156,6 +159,7 @@ func (c *Client) DeleteCluster(id, account_id string) error {
 		return fmt.Errorf("delete cluster: %s", response.Error().(*ErrorResponse).Error.Message)
 	}
 
+	log.Printf("[DEBUG] DeleteCluster Success(%s, %s)", id, account_id)
 	return nil
 }
 
