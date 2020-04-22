@@ -2,44 +2,81 @@ package confluentcloud
 
 import (
 	"fmt"
+	"log"
 	"net/url"
+	"time"
 )
 
 type ClustersResponse struct {
 	Clusters []Cluster `json:"clusters"`
 }
 
+type ClusterCreateDeploymentConfig struct {
+	Sku       string `json:"sku"`
+	AccountID string `json:"account_id"`
+}
+
 type ClusterCreateConfig struct {
-	Name            string `json:"name"`
-	AccountID       string `json:"accountId"`
-	Storage         int    `json:"storage"`
-	Region          string `json:"region"`
-	ServiceProvider string `json:"serviceProvider"`
-	Durability      string `json:"durability"`
+	Name            string                        `json:"name"`
+	AccountID       string                        `json:"accountId"`
+	Storage         int                           `json:"storage"`
+	NetworkIngress  int                           `json:"network_ingress"`
+	NetworkEgress   int                           `json:"network_egress"`
+	Region          string                        `json:"region"`
+	ServiceProvider string                        `json:"serviceProvider"`
+	Durability      string                        `json:"durability"`
+	Deployment      ClusterCreateDeploymentConfig `json:"deployment"`
 }
 
 type ClusterCreateRequest struct {
 	Config ClusterCreateConfig `json:"config"`
 }
 
+type ClusterDeploymentNetworkAccess struct {
+	PublicInternet []interface{} `json:"public_internet"`
+	VpcPeering     []interface{} `json:"vpc_peering"`
+	PrivateLink    []interface{} `json:"private_link"`
+	TransitGateway []interface{} `json:"transit_gateway"`
+}
+
+type ClusterDeployment struct {
+	ID            string                         `json:"id"`
+	Created       time.Time                      `json:"created"`
+	Modified      time.Time                      `json:"modified"`
+	Deactivated   time.Time                      `json:"deactiviated"`
+	AccountID     string                         `json:"account_id"`
+	NetworkAccess ClusterDeploymentNetworkAccess `json:"network_access"`
+	Sku           string                         `json:"sku"`
+}
+
 type Cluster struct {
-	ID              string `json:"id"`
-	Name            string `json:"name"`
-	AccountID       string `json:"account_id"`
-	NetworkIngress  int    `json:"network_ingress"`
-	NetworkEgress   int    `json:"network_egress"`
-	Storage         int    `json:"storage"`
-	Durability      string `json:"durability"`
-	Status          string `json:"status"`
-	Endpoint        string `json:"endpoint"`
-	Region          string `json:"region"`
-	ServiceProvider string `json:"service_provider"`
-	OrganizationID  int    `json:"organization_id"`
-	Enterprise      bool   `json:"enterprise"`
-	Type            string `json:"type"`
-	APIEndpoint     string `json:"api_endpoint"`
-	InternalProxy   bool   `json:"internal_proxy"`
-	Dedicated       bool   `json:"dedicated"`
+	ID                       string            `json:"id"`
+	Name                     string            `json:"name"`
+	AccountID                string            `json:"account_id"`
+	NetworkIngress           int               `json:"network_ingress"`
+	NetworkEgress            int               `json:"network_egress"`
+	Storage                  int               `json:"storage"`
+	Durability               string            `json:"durability"`
+	Status                   string            `json:"status"`
+	Endpoint                 string            `json:"endpoint"`
+	Region                   string            `json:"region"`
+	ServiceProvider          string            `json:"service_provider"`
+	OrganizationID           int               `json:"organization_id"`
+	Enterprise               bool              `json:"enterprise"`
+	K8sClusterID             string            `json:"k8s_cluster_id"`
+	PhysicalClusterID        string            `json:"physical_cluster_id"`
+	PricePerHour             string            `json:"prince_per_hour"`
+	AccruedThisCycle         string            `json:"accrued_this_cycle"`
+	Type                     string            `json:"type"`
+	APIEndpoint              string            `json:"api_endpoint"`
+	InternalProxy            bool              `json:"internal_proxy"`
+	IsSLAEnabled             bool              `json:"is_sla_enabled"`
+	IsSchedulable            bool              `json:"is_schedulable"`
+	Dedicated                bool              `json:"dedicated"`
+	NetworkIsolationDomainID string            `json:"network_isolation_domain_id"`
+	MaxNetworkIngress        int               `json:"max_network_ingress"`
+	MaxNetworkEgress         int               `json:"max_network_egress"`
+	Deployment               ClusterDeployment `json:"deployment"`
 }
 
 type ClusterResponse struct {
@@ -102,13 +139,15 @@ func (c *Client) DeleteCluster(id, account_id string) error {
 
 	u := c.BaseURL.ResolveReference(rel)
 
-	data, err := c.GetCluster(id, account_id)
-	if err != nil {
-		return err
-	}
-
 	response, err := c.NewRequest().
-		SetBody(&ClusterResponse{Cluster: *data}).
+		SetBody(
+			map[string]interface{}{
+				"cluster": map[string]interface{}{
+					"id": id,
+					"accountId": account_id,
+				},
+			},
+		).
 		SetError(&ErrorResponse{}).
 		Delete(u.String())
 
@@ -120,6 +159,7 @@ func (c *Client) DeleteCluster(id, account_id string) error {
 		return fmt.Errorf("delete cluster: %s", response.Error().(*ErrorResponse).Error.Message)
 	}
 
+	log.Printf("[DEBUG] DeleteCluster Success(%s, %s)", id, account_id)
 	return nil
 }
 
