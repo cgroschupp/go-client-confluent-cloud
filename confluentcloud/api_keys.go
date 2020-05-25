@@ -37,6 +37,7 @@ type ApiKeyCreateRequestW struct {
 }
 type ApiKeyCreateRequest struct {
 	AccountID       string           `json:"accountId"`
+	UserID          int              `json:"user_id,omitempty"`
 	LogicalClusters []LogicalCluster `json:"logical_clusters"`
 }
 
