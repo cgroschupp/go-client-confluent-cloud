@@ -26,6 +26,7 @@ type ClusterCreateConfig struct {
 	ServiceProvider string                        `json:"serviceProvider"`
 	Durability      string                        `json:"durability"`
 	Deployment      ClusterCreateDeploymentConfig `json:"deployment"`
+	Cku             int                           `json:"cku"`
 }
 
 type ClusterCreateRequest struct {
@@ -77,6 +78,7 @@ type Cluster struct {
 	MaxNetworkIngress        int               `json:"max_network_ingress"`
 	MaxNetworkEgress         int               `json:"max_network_egress"`
 	Deployment               ClusterDeployment `json:"deployment"`
+	Cku                      int               `json:"cku"`
 }
 
 type ClusterResponse struct {
