@@ -21,10 +21,10 @@ type SchemaRegistryCreateRequest struct {
 
 type SchemaRegistryRequest struct {
 	AccountID           string `json:"account_id"`
-	KafkaClusterID		string `json:"kafka_cluster_id"`
-	Location			string `json:"location"`
-	Name				string `json:"name"`
-	ServiceProvider		string `json:"service_provider"`
+	KafkaClusterID      string `json:"kafka_cluster_id"`
+	Location            string `json:"location"`
+	Name                string `json:"name"`
+	ServiceProvider     string `json:"service_provider"`
 }
 
 func (c *Client) GetSchemaRegistries(id string) (*[]Cluster, error) {
