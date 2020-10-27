@@ -14,6 +14,7 @@ type ClustersResponse struct {
 type ClusterCreateDeploymentConfig struct {
 	Sku       string `json:"sku"`
 	AccountID string `json:"account_id"`
+	Cku       int    `json:"cku"`
 }
 
 type ClusterCreateConfig struct {
@@ -47,6 +48,7 @@ type ClusterDeployment struct {
 	AccountID     string                         `json:"account_id"`
 	NetworkAccess ClusterDeploymentNetworkAccess `json:"network_access"`
 	Sku           string                         `json:"sku"`
+	Cku           int                            `json:"cku"`
 }
 
 type Cluster struct {
@@ -143,7 +145,7 @@ func (c *Client) DeleteCluster(id, account_id string) error {
 		SetBody(
 			map[string]interface{}{
 				"cluster": map[string]interface{}{
-					"id": id,
+					"id":        id,
 					"accountId": account_id,
 				},
 			},
