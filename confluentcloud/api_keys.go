@@ -2,6 +2,7 @@ package confluentcloud
 
 import (
 	"fmt"
+	"log"
 	"net/url"
 )
 
@@ -65,6 +66,39 @@ func (c *Client) CreateAPIKey(request *ApiKeyCreateRequest) (*APIKey, error) {
 	}
 
 	return &response.Result().(*APIKeyResponse).APIKey, nil
+}
+
+func (c *Client) DeleteAPIKey(id, account_id string, logical_clusters []LogicalCluster) error {
+	rel, err := url.Parse(fmt.Sprintf("api_keys/%s", id))
+	if err != nil {
+		return err
+	}
+
+	u := c.BaseURL.ResolveReference(rel)
+
+	response, err := c.NewRequest().
+		SetBody(
+			map[string]interface{}{
+				"api_key": map[string]interface{}{
+					"id":               id,
+					"accountId":        account_id,
+					"logical_clusters": logical_clusters,
+				},
+			},
+		).
+		SetError(&ErrorResponse{}).
+		Delete(u.String())
+
+	if err != nil {
+		return err
+	}
+
+	if response.IsError() {
+		return fmt.Errorf("delete api key: %s", response.Error().(*ErrorResponse).Error.Message)
+	}
+
+	log.Printf("[DEBUG] DeleteAPIKey Success(%s, %s)", id, account_id)
+	return nil
 }
 
 func (c *Client) ListAPIKeys(clusterID, accountID string) ([]APIKey, error) {
