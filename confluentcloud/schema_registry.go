@@ -3,16 +3,33 @@ package confluentcloud
 import (
 	"fmt"
 	"net/url"
+	"time"
 )
 
 const schemaRegistryApiResource = "schema_registries?account_id=%s"
 
+type SchemaRegistry struct {
+	ID                string    `json:"id"`
+	Name              string    `json:"name"`
+	KafkaClusterID    string    `json:"kafka_cluster_id"`
+	Endpoint          string    `json:"endpoint"`
+	Created           time.Time `json:"created"`
+	Modified          time.Time `json:"modified"`
+	Status            string    `json:"status"`
+	PhysicalClusterID string    `json:"physical_cluster_id"`
+	AccountID         string    `json:"account_id"`
+	OrganizationID    int       `json:"organization_id"`
+	MaxSchemas        int       `json:"max_schemas"`
+}
+
 type SchemaRegistryResponse struct {
-	Clusters []Cluster `json:"clusters"`
+	Error interface{}	   `json:"error"`
+	Clusters []SchemaRegistry `json:"clusters"`
 }
 
 type SchemaRegistryCreateResponse struct {
-	Cluster Cluster `json:"cluster"`
+	Error interface{}	   `json:"error"`
+	Cluster SchemaRegistry `json:"cluster"`
 }
 
 type SchemaRegistryCreateRequest struct {
@@ -27,7 +44,7 @@ type SchemaRegistryRequest struct {
 	ServiceProvider     string `json:"service_provider"`
 }
 
-func (c *Client) GetSchemaRegistries(id string) (*[]Cluster, error) {
+func (c *Client) GetSchemaRegistries(id string) ([]SchemaRegistry, error) {
 	rel, err := url.Parse(fmt.Sprintf(schemaRegistryApiResource, id))
 	if err != nil {
 		return nil, err
@@ -48,10 +65,10 @@ func (c *Client) GetSchemaRegistries(id string) (*[]Cluster, error) {
 		return nil, fmt.Errorf("get environment: %s", response.Error().(*ErrorResponse).Error.Message)
 	}
 
-	return &response.Result().(*SchemaRegistryResponse).Clusters, nil
+	return response.Result().(*SchemaRegistryResponse).Clusters, nil
 }
 
-func (c *Client) CreateSchemaRegistry(accountID string, location string, serviceProvider string) (*Cluster, error) {
+func (c *Client) CreateSchemaRegistry(accountID string, location string, serviceProvider string) (*SchemaRegistry, error) {
 	rel, err := url.Parse(fmt.Sprintf(schemaRegistryApiResource, accountID))
 	if err != nil {
 		return nil, err
