@@ -7,6 +7,7 @@ import (
 )
 
 const schemaRegistryApiResource = "schema_registries?account_id=%s"
+const schemaRegistryName = "account schema-registry"
 
 type SchemaRegistry struct {
 	ID                string    `json:"id"`
@@ -23,12 +24,12 @@ type SchemaRegistry struct {
 }
 
 type SchemaRegistryResponse struct {
-	Error interface{}	   `json:"error"`
+	Error interface{}         `json:"error"`
 	Clusters []SchemaRegistry `json:"clusters"`
 }
 
 type SchemaRegistryCreateResponse struct {
-	Error interface{}	   `json:"error"`
+	Error interface{}      `json:"error"`
 	Cluster SchemaRegistry `json:"cluster"`
 }
 
@@ -44,7 +45,7 @@ type SchemaRegistryRequest struct {
 	ServiceProvider     string `json:"service_provider"`
 }
 
-func (c *Client) GetSchemaRegistries(id string) ([]SchemaRegistry, error) {
+func (c *Client) GetSchemaRegistry(id string) (*SchemaRegistry, error) {
 	rel, err := url.Parse(fmt.Sprintf(schemaRegistryApiResource, id))
 	if err != nil {
 		return nil, err
@@ -60,12 +61,20 @@ func (c *Client) GetSchemaRegistries(id string) ([]SchemaRegistry, error) {
 	if err != nil {
 		return nil, err
 	}
- 
+
 	if response.IsError() {
-		return nil, fmt.Errorf("get environment: %s", response.Error().(*ErrorResponse).Error.Message)
+		return nil, fmt.Errorf("Get schema registry error: %s", response.Error().(*ErrorResponse).Error.Message)
 	}
 
-	return response.Result().(*SchemaRegistryResponse).Clusters, nil
+	schema_clusters := response.Result().(*SchemaRegistryResponse).Clusters
+
+	for i:= 0; i < len(schema_clusters); i++ {
+		if schema_clusters[i].Name == schemaRegistryName {
+			return &schema_clusters[i], nil
+		}
+	}
+
+	return nil, nil
 }
 
 func (c *Client) CreateSchemaRegistry(accountID string, location string, serviceProvider string) (*SchemaRegistry, error) {
@@ -84,11 +93,21 @@ func (c *Client) CreateSchemaRegistry(accountID string, location string, service
 		return nil, fmt.Errorf("No cluster found. Cannot enable schema registry. Environment: %s", accountID)
 	}
 
+	schema_cluster, err := c.GetSchemaRegistry(accountID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if schema_cluster != nil {
+		return schema_cluster, nil
+	}
+
 	u := c.BaseURL.ResolveReference(rel)
 
 	request := SchemaRegistryRequest{
 		KafkaClusterID: "",
-		Name: "account schema-registry",
+		Name: schemaRegistryName,
 		AccountID: accountID,
 		Location: location,
 		ServiceProvider: serviceProvider,
