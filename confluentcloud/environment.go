@@ -16,6 +16,10 @@ type EnvironmentResponse struct {
 	Account Environment `json:"account"`
 }
 
+type EnvironmentsResponse struct { 
+	Accounts []Environment `json:"accounts"`
+}
+
 type EnvironmentCreateRequest struct {
 	Account EnvironmentRequest `json:"account"`
 }
@@ -47,6 +51,30 @@ func (c *Client) GetEnvironment(id string) (*Environment, error) {
 	}
 
 	return &response.Result().(*EnvironmentResponse).Account, nil
+}
+
+func (c *Client) ListEnvironments() ([]Environment, error) { 
+	rel, err := url.Parse("accounts")
+	if err != nil {
+		return []Environment{}, err
+	}
+
+	u := c.BaseURL.ResolveReference(rel)
+
+	response, err := c.NewRequest().
+	SetResult(&EnvironmentsResponse{}).
+	SetError(&ErrorResponse{}).
+	Get(u.String())
+
+	if err != nil {
+		return []Environment{}, err
+	}
+
+	if response.IsError() {
+		return []Environment{}, fmt.Errorf("get environments: %s", response.Error().(*ErrorResponse).Error.Message)
+	}
+
+	return response.Result().(*EnvironmentsResponse).Accounts, nil
 }
 
 func (c *Client) CreateEnvironment(name string, organizationID int) (*Environment, error) {
