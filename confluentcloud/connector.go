@@ -129,7 +129,6 @@ func (c *Client) DeleteConnector(account_id, cluster_id, name string) error {
 	u := c.BaseURL.ResolveReference(rel)
 
 	response, err := c.NewRequest().
-		SetResult(&ConnectorInfo{}).
 		SetError(&ErrorResponse{}).
 		Delete(u.String())
 
