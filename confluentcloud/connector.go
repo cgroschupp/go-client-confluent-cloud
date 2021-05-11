@@ -25,10 +25,8 @@ type ConnectorInfo struct {
 }
 
 type Connector struct {
-	ID          ConnectorID `json:"id"`
-	Info        ConnectorInfo
-	Name        string `json:"info.name"`
-	Description string `json:"service_description"`
+	ID   ConnectorID   `json:"id"`
+	Info ConnectorInfo `json:"info"`
 }
 
 type CreateConnectorRequest struct {
