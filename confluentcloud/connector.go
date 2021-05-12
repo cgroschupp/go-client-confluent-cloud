@@ -25,10 +25,8 @@ type ConnectorInfo struct {
 }
 
 type Connector struct {
-	ID          ConnectorID `json:"id"`
-	Info        ConnectorInfo
-	Name        string `json:"info.name"`
-	Description string `json:"service_description"`
+	ID   ConnectorID   `json:"id"`
+	Info ConnectorInfo `json:"info"`
 }
 
 type CreateConnectorRequest struct {
@@ -129,7 +127,6 @@ func (c *Client) DeleteConnector(account_id, cluster_id, name string) error {
 	u := c.BaseURL.ResolveReference(rel)
 
 	response, err := c.NewRequest().
-		SetResult(&ConnectorInfo{}).
 		SetError(&ErrorResponse{}).
 		Delete(u.String())
 
