@@ -118,6 +118,30 @@ func (c *Client) UpdateConnectorConfig(account_id, cluster_id, name string, conf
 
 }
 
+func (c *Client) GetConnector(account_id, cluster_id, name string) (*ConnectorInfo, error) {
+	rel, err := url.Parse(fmt.Sprintf("accounts/%s/clusters/%s/connectors/%s", account_id, cluster_id, name))
+	if err != nil {
+		return nil, err
+	}
+
+	u := c.BaseURL.ResolveReference(rel)
+
+	response, err := c.NewRequest().
+		SetResult(&ConnectorInfo{}).
+		SetError(&ErrorResponse{}).
+		Get(u.String())
+
+	if err != nil {
+		return nil, err
+	}
+
+	if response.IsError() {
+		return nil, fmt.Errorf("connectors: %s", response.Error().(*ErrorResponse).Error.Message)
+	}
+
+	return response.Result().(*ConnectorInfo), nil
+}
+
 func (c *Client) DeleteConnector(account_id, cluster_id, name string) error {
 	rel, err := url.Parse(fmt.Sprintf("accounts/%s/clusters/%s/connectors/%s", account_id, cluster_id, name))
 	if err != nil {
