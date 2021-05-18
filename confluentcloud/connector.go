@@ -78,7 +78,7 @@ func (c *Client) CreateConnector(account_id, cluster_id, name string, config Con
 	response, err := c.NewRequest().
 		SetBody(&CreateConnectorRequest{Name: name, Config: config}).
 		SetResult(&ConnectorInfo{}).
-		SetError(&ErrorResponse{}).
+		SetError(&ErrorMessage{}).
 		Post(u.String())
 
 	if err != nil {
@@ -86,7 +86,7 @@ func (c *Client) CreateConnector(account_id, cluster_id, name string, config Con
 	}
 
 	if response.IsError() {
-		return nil, fmt.Errorf("connectors: %s", response.Error().(*ErrorResponse).Error.Message)
+		return nil, fmt.Errorf("connectors: %s", response.Error().(*ErrorMessage).Message)
 	}
 
 	return response.Result().(*ConnectorInfo), nil
