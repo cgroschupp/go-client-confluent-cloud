@@ -92,7 +92,7 @@ func (c *Client) GetAccessToken() (*string, error) {
 }
 
 func (c *Client) ListACLs(apiEndpoint *url.URL, clusterID string, aclRequest *ACLRequest) ([]ACL, error) {
-	token, err := c.GetAccessToken()
+	token, err := c.GetKafkaClusterAccessToken()
 	if err != nil {
 		return nil, err
 	}
