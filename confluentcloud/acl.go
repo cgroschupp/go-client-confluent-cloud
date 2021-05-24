@@ -5,25 +5,19 @@ import (
 	"net/url"
 )
 
-type AccessTokenRequest struct{}
-type AccessTokenResponse struct {
-	Token string `json:"token"`
-}
-
 type ACLRequest struct {
-	PatternFilter *PatternFilter `json:"patternFilter"`
-	EntryFilter   *EntryFilter   `json:"entryFilter"`
+	PatternFilter *ListPatternFilter `json:"patternFilter"`
+	EntryFilter   *ListEntryFilter   `json:"entryFilter"`
 }
-type PatternFilter struct {
+type ListPatternFilter struct {
 	ResourceType string `json:"resourceType"`
 	PatternType  string `json:"patternType"`
 }
-type EntryFilter struct {
+type ListEntryFilter struct {
 	Operation      string `json:"operation"`
 	Host           string `json:"host"`
 	PermissionType string `json:"permissionType"`
 }
-
 type ListACLResponse = []ACL
 type ACL struct {
 	Pattern Pattern `json:"pattern"`
@@ -48,12 +42,12 @@ type ACLCreateRequest struct {
 }
 type CreateACLResponse = []ACLCreateRequest
 
-type PatternFilter struct {
+type DeletePatternFilter struct {
 	ResourceType string `json:"resourceType"`
 	Name         string `json:"name"`
 	PatternType  string `json:"patternType"`
 }
-type EntryFilter struct {
+type DeleteEntryFilter struct {
 	Principal      string `json:"principal"`
 	Operation      string `json:"operation"`
 	Host           string `json:"host"`
@@ -61,35 +55,10 @@ type EntryFilter struct {
 }
 type ACLDeleteRequestW = []ACLDeleteRequest
 type ACLDeleteRequest struct {
-	PatternFilter *PatternFilter `json:"patternFilter"`
-	EntryFilter   *EntryFilter   `json:"entryFilter"`
+	PatternFilter *DeletePatternFilter `json:"patternFilter"`
+	EntryFilter   *DeleteEntryFilter   `json:"entryFilter"`
 }
 type DeleteACLResponse = []ACLDeleteRequest
-
-func (c *Client) GetAccessToken() (*string, error) {
-	rel, err := url.Parse("access_tokens")
-	if err != nil {
-		return nil, err
-	}
-
-	u := c.BaseURL.ResolveReference(rel)
-
-	response, err := c.NewRequest().
-		SetBody(AccessTokenRequest{}).
-		SetResult(&AccessTokenResponse{}).
-		SetError(&ErrorResponse{}).
-		Post(u.String())
-
-	if err != nil {
-		return nil, err
-	}
-
-	if response.IsError() {
-		return nil, fmt.Errorf("access_tokens: %s", response.Error().(*ErrorResponse).Error.Message)
-	}
-
-	return &response.Result().(*AccessTokenResponse).Token, nil
-}
 
 func (c *Client) ListACLs(apiEndpoint *url.URL, clusterID string, aclRequest *ACLRequest) ([]ACL, error) {
 	token, err := c.GetKafkaClusterAccessToken()
