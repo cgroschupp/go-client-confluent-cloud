@@ -91,16 +91,16 @@ func (c *Client) ListACLs(apiEndpoint *url.URL, clusterID string, aclRequest *AC
 	return *result, nil
 }
 
-func (c *Client) CreateACLs(apiEndpoint *url.URL, clusterID string, aclCreateRequestW *ACLCreateRequestW) (CreateACLResponse, error) {
+func (c *Client) CreateACLs(apiEndpoint *url.URL, clusterID string, aclCreateRequestW *ACLCreateRequestW) error {
 	token, err := c.GetKafkaClusterAccessToken()
 	if err != nil {
-		return nil, err
+		return err
 	}
 	cc := NewKafkaClusterClient(apiEndpoint, clusterID, *token)
 
 	rel, err := url.Parse("acls")
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	u := cc.BaseURL.ResolveReference(rel)
@@ -111,26 +111,25 @@ func (c *Client) CreateACLs(apiEndpoint *url.URL, clusterID string, aclCreateReq
 		SetResult(&CreateACLResponse{}).
 		Post(u.String())
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if response.IsError() {
-		return nil, fmt.Errorf("create_acls: %s", response.Body())
+		return fmt.Errorf("create_acls: %s", response.Body())
 	}
 
-	result := response.Result().(*CreateACLResponse)
-	return *result, nil
+	return nil
 }
 
-func (c *Client) DeleteACLs(apiEndpoint *url.URL, clusterID string, aclDeleteRequestW *ACLDeleteRequestW) (DeleteACLResponse, error) {
+func (c *Client) DeleteACLs(apiEndpoint *url.URL, clusterID string, aclDeleteRequestW *ACLDeleteRequestW) error {
 	token, err := c.GetKafkaClusterAccessToken()
 	if err != nil {
-		return nil, err
+		return err
 	}
 	cc := NewKafkaClusterClient(apiEndpoint, clusterID, *token)
 
 	rel, err := url.Parse("acls/delete")
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	u := cc.BaseURL.ResolveReference(rel)
@@ -141,12 +140,11 @@ func (c *Client) DeleteACLs(apiEndpoint *url.URL, clusterID string, aclDeleteReq
 		SetResult(&DeleteACLResponse{}).
 		Delete(u.String())
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if response.IsError() {
-		return nil, fmt.Errorf("delete_acls: %s", response.Body())
+		return fmt.Errorf("delete_acls: %s", response.Body())
 	}
 
-	result := response.Result().(*DeleteACLResponse)
-	return *result, nil
+	return nil
 }
