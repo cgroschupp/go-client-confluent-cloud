@@ -91,7 +91,7 @@ func (c *Client) ListACLs(apiEndpoint *url.URL, clusterID string, aclRequest *AC
 	return *result, nil
 }
 
-func (c *Client) CreateACLs(apiEndpoint *url.URL, clusterID string, aclCreateRequestW *ACLCreateRequestW) (interface{}, error) {
+func (c *Client) CreateACLs(apiEndpoint *url.URL, clusterID string, aclCreateRequestW *ACLCreateRequestW) (CreateACLResponse, error) {
 	token, err := c.GetKafkaClusterAccessToken()
 	if err != nil {
 		return nil, err
@@ -121,7 +121,7 @@ func (c *Client) CreateACLs(apiEndpoint *url.URL, clusterID string, aclCreateReq
 	return *result, nil
 }
 
-func (c *Client) DeleteACLs(apiEndpoint *url.URL, clusterID string, aclDeleteRequestW *ACLDeleteRequestW) (interface{}, error) {
+func (c *Client) DeleteACLs(apiEndpoint *url.URL, clusterID string, aclDeleteRequestW *ACLDeleteRequestW) (DeleteACLResponse, error) {
 	token, err := c.GetKafkaClusterAccessToken()
 	if err != nil {
 		return nil, err
