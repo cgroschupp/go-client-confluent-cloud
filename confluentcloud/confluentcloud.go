@@ -30,10 +30,10 @@ type ErrorResponse struct {
 	Error ErrorMessage `json:"error"`
 }
 
-func NewClient(email, password string) *Client {
+func NewClient(email, password string, debug bool) *Client {
 	baseURL, _ := url.Parse(defaultBaseURL)
 	client := resty.New()
-	client.SetDebug(true)
+	client.SetDebug(debug)
 	c := &Client{BaseURL: baseURL, email: email, password: password, UserAgent: userAgent}
 	c.client = client
 	return c
