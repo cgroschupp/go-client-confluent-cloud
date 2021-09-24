@@ -17,16 +17,17 @@ type ClusterCreateDeploymentConfig struct {
 }
 
 type ClusterCreateConfig struct {
-	Name            string                        `json:"name"`
-	AccountID       string                        `json:"accountId"`
-	Storage         int                           `json:"storage"`
-	NetworkIngress  int                           `json:"network_ingress"`
-	NetworkEgress   int                           `json:"network_egress"`
-	Region          string                        `json:"region"`
-	ServiceProvider string                        `json:"serviceProvider"`
-	Durability      string                        `json:"durability"`
-	Deployment      ClusterCreateDeploymentConfig `json:"deployment"`
-	Cku             int                           `json:"cku"`
+	Name                string                        `json:"name"`
+	AccountID           string                        `json:"accountId"`
+	Storage             int                           `json:"storage"`
+	NetworkIngress      int                           `json:"network_ingress"`
+	NetworkEgress       int                           `json:"network_egress"`
+	Region              string                        `json:"region"`
+	ServiceProvider     string                        `json:"serviceProvider"`
+	Durability          string                        `json:"durability"`
+	Deployment          ClusterCreateDeploymentConfig `json:"deployment"`
+	Cku                 int                           `json:"cku"`
+	SelectedNetworkType string                        `json:"selected_network_type"`
 }
 
 type ClusterCreateRequest struct {
