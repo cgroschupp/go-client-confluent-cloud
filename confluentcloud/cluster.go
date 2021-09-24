@@ -28,6 +28,7 @@ type ClusterCreateConfig struct {
 	Deployment          ClusterCreateDeploymentConfig `json:"deployment"`
 	Cku                 int                           `json:"cku"`
 	SelectedNetworkType string                        `json:"selected_network_type"`
+	EncryptionKeyID     string                        `json:"encryption_key_id"`
 }
 
 type ClusterCreateRequest struct {
