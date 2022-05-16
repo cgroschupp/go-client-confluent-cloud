@@ -31,11 +31,15 @@ type ErrorResponse struct {
 }
 
 func NewClient(email, password string) *Client {
+	rc := resty.New()
+	rc.SetDebug(true)
+	return NewClientWithRestyClient(email, password, rc)
+}
+
+func NewClientWithRestyClient(email, password string, restyClient *resty.Client) *Client {
 	baseURL, _ := url.Parse(defaultBaseURL)
-	client := resty.New()
-	client.SetDebug(true)
 	c := &Client{BaseURL: baseURL, email: email, password: password, UserAgent: userAgent}
-	c.client = client
+	c.client = restyClient
 	return c
 }
 
